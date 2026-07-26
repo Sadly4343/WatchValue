@@ -6,4 +6,4 @@ ___________  # what file will hold your Anthropic/OpenAI API keys?
 
 # Editor
 .vscode/
-.DS_Store
+.DS_Storeg
