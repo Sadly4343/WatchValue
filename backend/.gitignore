@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+___________  # what file will hold your Anthropic/OpenAI API keys?
+
+.env
+
+
+# Editor
+.vscode/
+.DS_Storeg

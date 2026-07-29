@@ -1,6 +1,6 @@
 import os
 from openai import OpenAI
-from app.schemas.listings import ListingCreate
+from app.models.schemas import ListingCreate
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
