@@ -4,8 +4,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app.routers import listings, retrieval, generation
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Provenance API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(listings.router)
 app.include_router(retrieval.router)
