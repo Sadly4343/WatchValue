@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-
 from app.db.base import get_db
 from app.models.listing import Listing, DocumentChunk
 from app.models.schemas import ListingCreate, ListingResponse
@@ -29,6 +28,37 @@ def create_listing(payload: ListingCreate, db: Session = Depends(get_db)):
     db.commit()
 
     return listing
+
+@router.post("/bulk", response_model=list[ListingResponse])
+def create_listings_bulk(payload: list[ListingCreate], db: Session = Depends(get_db)):
+    created_listings = []
+
+    for item in payload:
+        listing = Listing(**item.model_dump())
+        db.add(listing)
+        db.flush()
+
+        text = text_builder(item)
+        embedding = embed_text(text)
+
+        chunk = DocumentChunk(
+            source_type="listing_description",
+            source_id=listing.id,
+            chunk_text=text,
+            embedding=embedding
+        )
+        db.add(chunk)
+
+        created_listings.append(listing)
+        
+    db.commit()
+
+    for listing in created_listings:
+        db.refresh(listing)
+    
+    return created_listings
+
+
 
 
 @router.get("/", response_model=list[ListingResponse])
