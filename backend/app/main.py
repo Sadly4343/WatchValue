@@ -12,7 +12,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://your-actual-vercel-url.vercel.app",
+        "https://watch-value-34xed54d5-logan-hartshorns-projects.vercel.app",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
