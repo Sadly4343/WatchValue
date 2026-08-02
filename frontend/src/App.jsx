@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import './App.css'
 
+
 const emptyRow = {
   manufacturer: '',
   model: '',
@@ -35,7 +36,7 @@ function App() {
   }
 
   async function handleSubmit() {
-    const response = await fetch('http://127.0.0.1:8000/listings/bulk', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/listings/bulk`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ function App() {
     setIsLoading(true)
 
     const response = await fetch(
-      `http://127.0.0.1:8000/generation/?question=${encodeURIComponent(watchQuestion)}`
+      `${import.meta.env.VITE_API_URL}/generation/?question=${encodeURIComponent(watchQuestion)}`
     )
 
     if (response.ok) {

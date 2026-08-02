@@ -10,11 +10,13 @@ app = FastAPI(title="Provenance API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://your-actual-vercel-url.vercel.app",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(listings.router)
 app.include_router(retrieval.router)
 app.include_router(generation.router)
