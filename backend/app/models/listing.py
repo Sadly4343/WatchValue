@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, Numeric, Date, Boolean, Text, JSON
 from pgvector.sqlalchemy import Vector
+from sqlalchemy import JSON, Boolean, Column, Date, Integer, Numeric, String, Text
 
 from app.db.base import Base
 

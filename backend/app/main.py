@@ -1,10 +1,12 @@
-from fastapi import FastAPI
+# ruff: noqa: E402
 from dotenv import load_dotenv
+from fastapi import FastAPI
 
 load_dotenv()
 
-from app.routers import listings, retrieval, generation
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.routers import generation, listings, retrieval
 
 app = FastAPI(title="Provenance API")
 

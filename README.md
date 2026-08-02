@@ -7,7 +7,7 @@ A hybrid RAG (Retrieval-Augmented Generation) application for vintage watch valu
 
 ## What it does
 
-Ask a natural-language question like *"what's a fair price for a Waltham Vanguard 16 size in good condition?"* and Provenance:
+Ask a natural-language question like _"what's a fair price for a Waltham Vanguard 16 size in good condition?"_ and Provenance:
 
 1. Embeds your question and finds the most semantically similar listing descriptions in the database (vector search)
 2. Identifies the manufacturer/model mentioned in your question and pulls real price statistics (avg/min/max/count) from structured sales data (SQL)
@@ -98,12 +98,14 @@ Two features live in one page:
 ## Setup
 
 ### Prerequisites
+
 - Docker Desktop
 - Python 3.11+
 - An OpenAI API key
 - An Anthropic API key
 
 ### 1. Clone and install
+
 ```bash
 git clone <repo-url>
 cd provenance-rag/backend
@@ -111,7 +113,9 @@ pip install -r requirements.txt
 ```
 
 ### 2. Environment variables
+
 Create a `.env` file in `backend/`:
+
 ```
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
@@ -119,14 +123,17 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/provenance
 ```
 
 ### 3. Start the database
+
 ```bash
 docker compose up -d
 ```
+
 This spins up Postgres with pgvector and runs `db/schema.sql` on first init to create the `listings` and `document_chunks` tables.
 
-> **Note:** the schema only runs on the *first* container start with a fresh volume. If you need to reset it (e.g., after a schema change), run `docker compose down -v` first to wipe the volume, then `docker compose up -d` again.
+> **Note:** the schema only runs on the _first_ container start with a fresh volume. If you need to reset it (e.g., after a schema change), run `docker compose down -v` first to wipe the volume, then `docker compose up -d` again.
 
 ### 4. Run the API
+
 ```bash
 uvicorn app.main:app --reload
 ```
@@ -136,6 +143,7 @@ API docs available at `http://127.0.0.1:8000/docs`.
 ## API Endpoints
 
 ### `POST /listings/`
+
 Create a new listing. Automatically generates and stores an embedding of the listing description.
 
 ```json
@@ -151,12 +159,15 @@ Create a new listing. Automatically generates and stores an embedding of the lis
 ```
 
 ### `GET /listings/`
+
 Filter listings by manufacturer, model, jewels, or size.
 
 ### `GET /retrieval/?question=...`
+
 Vector similarity search only — returns the closest matching listing descriptions with cosine distance scores. No LLM call.
 
 ### `GET /generation/?question=...`
+
 Full RAG pipeline — embeds the question, runs vector search, extracts manufacturer/model, pulls SQL price stats, and returns a Claude-generated answer grounded in that data.
 
 ```json
@@ -164,7 +175,7 @@ Full RAG pipeline — embeds the question, runs vector search, extracts manufact
   "question": "what is a fair price for a Waltham Vanguard 16 size",
   "answer": "Based on the available data, a fair price appears to be around $225...",
   "price_stats": { "avg": 225, "min": 225, "max": 225, "count": 1 },
-  "matches": [ { "chunk_text": "...", "source_id": 1, "distance": 0.29 } ]
+  "matches": [{ "chunk_text": "...", "source_id": 1, "distance": 0.29 }]
 }
 ```
 

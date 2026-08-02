@@ -1,8 +1,8 @@
 import os
+
 from anthropic import Anthropic
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from sqlalchemy import text
 
 from app.models.listing import Listing
 
@@ -45,7 +45,10 @@ def vector_search(query_vector: list[float], db: Session, limit: int = 5) -> lis
         """),
         {"query_vector": str(query_vector), "limit": limit}
     )
-    return [{"chunk_text": row.chunk_text, "source_id": row.source_id, "distance": row.distance} for row in result]
+    return [
+        {"chunk_text": row.chunk_text, "source_id": row.source_id, "distance": row.distance}
+        for row in result
+    ]
 
 def build_prompt(question: str, price_stats: dict, matches: list[dict]) -> str:
     context_lines = "\n".join(f"- {m['chunk_text']}" for m in matches)
@@ -63,8 +66,10 @@ Relevant listing descriptions:
 {context_lines}
 
 Instructions:
-- Only use the price statistics and listing descriptions provided above. Do not add outside information about the brand, model, or market beyond what's given here.
-- If the number of comparable sales is low, say so explicitly rather than presenting the price as a confident market average.
+- Only use the price statistics and listing descriptions provided above. Do not add
+  outside information about the brand, model, or market beyond what's given here.
+- If the number of comparable sales is low, say so explicitly rather than presenting
+  the price as a confident market average.
 - Be concise and cite specific details from the listings where relevant.
 
 Answer:"""
@@ -79,4 +84,7 @@ def generate_answer(prompt: str) -> str:
             {"role": "user", "content": prompt}
         ]
     )
-    return response.content[0].text
+    block = response.content[0]
+    if block.type != "text":
+        raise ValueError(f"Unexpected response block type: {block.type}")
+    return block.text

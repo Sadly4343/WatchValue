@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
 from app.db.base import get_db
-from app.models.listing import Listing, DocumentChunk
+from app.models.listing import DocumentChunk, Listing
 from app.models.schemas import ListingCreate, ListingResponse
-from app.services.embeddings import text_builder, embed_text
+from app.services.embeddings import embed_text, text_builder
 
 router = APIRouter(prefix="/listings", tags=["listings"])
 

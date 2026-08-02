@@ -1,12 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 
-from app.services.generation import vector_search
 from app.db.base import get_db
-
 from app.services.embeddings import embed_text
-from app.models.schemas import ListingResponse
+from app.services.generation import vector_search
 
 router = APIRouter(prefix="/retrieval", tags=["retrieval"])
 

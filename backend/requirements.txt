@@ -9,3 +9,8 @@ anthropic
 openai
 python-dotenv
 alembic
+pytest 
+httpx 
+ruff
+mypy
+
