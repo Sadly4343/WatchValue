@@ -2,6 +2,9 @@
 
 A hybrid RAG (Retrieval-Augmented Generation) application for vintage watch valuation and authentication. Provenance combines structured SQL price data with semantic vector search to give grounded, data-backed answers to watch valuation questions — powered by real comparable sale data, not model guesswork.
 
+**Live app:** [watch-value.vercel.app](https://watch-value.vercel.app)
+**Live API docs:** [watchvalue-production.up.railway.app/docs](https://watchvalue-production.up.railway.app/docs)
+
 ## What it does
 
 Ask a natural-language question like *"what's a fair price for a Waltham Vanguard 16 size in good condition?"* and Provenance:
@@ -36,12 +39,13 @@ User question
 
 ## Tech stack
 
-- **Backend:** FastAPI (Python)
-- **Database:** PostgreSQL + pgvector extension, run via Docker
+- **Backend:** FastAPI (Python), deployed on Railway
+- **Frontend:** React (Vite), deployed on Vercel
+- **Database:** PostgreSQL + pgvector extension — Docker locally, Railway Postgres in production
 - **ORM:** SQLAlchemy
 - **Embeddings:** OpenAI `text-embedding-3-small`
 - **Generation:** Anthropic Claude API
-- **Containerization:** Docker Compose
+- **Containerization:** Docker Compose (local dev)
 
 ## Project structure
 
@@ -67,7 +71,29 @@ backend/
 ├── docker-compose.yml
 ├── requirements.txt
 └── .env                        # OPENAI_API_KEY, ANTHROPIC_API_KEY, DATABASE_URL (not committed)
+
+frontend/
+├── src/
+│   ├── App.jsx                 # Bulk listing entry form + search/valuation UI
+│   ├── App.css
+│   └── main.jsx
+├── package.json
+└── .env                        # VITE_API_URL (not committed)
 ```
+
+## Frontend
+
+Two features live in one page:
+
+- **Watch Valuation Search** — a search box that hits `GET /generation/`, rendering Claude's markdown-formatted answer, price stats, and the source listings it drew from.
+- **Add Watch Listings** — a dynamic multi-row form for bulk-logging observed sales. Each row auto-collapses to a one-line summary (`Manufacturer — Model — $Price`) when a new row is added, and stays clickable to re-expand and edit. Submits the whole batch to `POST /listings/bulk` in one request, then resets to a single blank row.
+
+## Deployment
+
+- **Frontend** deploys to Vercel from the `frontend/` directory, with `VITE_API_URL` set to the live Railway backend URL.
+- **Backend** deploys to Railway from the `backend/` directory (root directory set accordingly), with `DATABASE_URL` pointing at Railway's Postgres via `${{ Postgres.DATABASE_URL }}`, plus `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` set as environment variables. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+- **Database** is Railway's managed Postgres, with the `vector` extension and schema (`listings`, `document_chunks`, HNSW index) applied manually via Railway's query interface on first setup.
+- **CORS** (`app/main.py`) explicitly allowlists both the local dev origin (`http://localhost:5173`) and the deployed frontend's stable production URL — never a wildcard, and never a per-deployment preview URL (those change on every deploy).
 
 ## Setup
 
@@ -155,9 +181,9 @@ Full RAG pipeline — embeds the question, runs vector search, extracts manufact
 - [x] Ingestion pipeline (listing creation + embedding)
 - [x] Hybrid retrieval (SQL + vector search)
 - [x] Grounded generation (Claude-composed answers)
-- [ ] React frontend chat UI
+- [x] React frontend (bulk listing form + search/valuation UI)
+- [x] Deployment (Railway + Vercel)
 - [ ] Authentication
-- [ ] Deployment (Railway/Render + Vercel)
 
 ## License
 
